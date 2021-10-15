@@ -57,7 +57,6 @@ ADDON_OBJECT_FOR_STATUS='{"type":"", "installed":"", "readyToUse":""}'
 PRODUCT_OBJECT_FOR_STATUS='{"name":"","type":"", "namespace":"", "installed":"", "readyToUse":""}'
 DEFAULT_DEMO_VERSION="2020.3.1-1"
 DEMO_OBJECT_FOR_STATUS='{"name":"", "installed":"", "readyToUse":""}'
-SAMPLES_REPO_BRANCH="main"
 MISSING_PARAMS="false"
 MISSING_PREREQS="false"
 
@@ -341,17 +340,6 @@ if [ $? -ne 0 ]; then
   MISSING_PREREQS="true"
 fi
 
-divider && echo -e "$INFO [INFO] Checking if 'ocp-pipeline' is already installed...\n"
-oc get serviceaccount pipeline
-if [ $? -ne 0 ]; then
-  echo -e "$INFO [INFO] 'ocp-pipeline' currently not installed, attempting to install...\n" 1>&2
-  $SCRIPT_DIR/install-ocp-pipeline.sh
-  if [ $? -eq 2 ]; then
-    echo -e "$CROSS [ERROR] 'ocp-pipeline' needs to be installed before running this script" 1>&2
-    MISSING_PREREQS="true"
-  fi
-fi
-
 if [[ "$MISSING_PREREQS" == "true" ]]; then
   divider
   exit 1
@@ -378,14 +366,13 @@ $DEBUG && echo -e "[DEBUG] Extracting the required information from the input fi
 GENERAL=$(echo $JSON | jq -r .spec.general)
 BLOCK_STORAGE_CLASS=$(echo $GENERAL | jq -r '.storage.block | if has("class") then .class else "cp4i-block-performance" end')
 FILE_STORAGE_CLASS=$(echo $GENERAL | jq -r '.storage.file | if has("class") then .class else "ibmc-file-gold-gid" end')
-SAMPLES_REPO_BRANCH=$(echo $GENERAL | jq -r 'if has("samplesRepoBranch") then .samplesRepoBranch else "'$SAMPLES_REPO_BRANCH'" end')
 LICENSE=$(echo $JSON | jq -r .spec.license)
 LICENSE_ACCEPT=$(echo $LICENSE | jq -r 'if has("accept") then .accept else "false" end')
 DEMO_LICENSE=$(echo $LICENSE | jq -r 'if has("demo") then .demo else "L-RJON-BYRMYW" end')
-ACE_LICENSE=$(echo $LICENSE | jq -r 'if has("ace") then .ace else "L-APEH-BPUCJK" end')
-APIC_LICENSE=$(echo $LICENSE | jq -r 'if has("apic") then .apic else "L-RJON-BRSHKF" end')
-AR_LICENSE=$(echo $LICENSE | jq -r 'if has("ar") then .ar else "L-NCAN-BXWG76" end')
-MQ_LICENSE=$(echo $LICENSE | jq -r 'if has("mq") then .mq else "L-RJON-BN7PN3" end')
+ACE_LICENSE=$(echo $LICENSE | jq -r 'if has("ace") then .ace else "L-APEH-C49KZH" end')
+APIC_LICENSE=$(echo $LICENSE | jq -r 'if has("apic") then .apic else "L-RJON-BZEP9N" end')
+AR_LICENSE=$(echo $LICENSE | jq -r 'if has("ar") then .ar else "L-NCAN-C3CJ8D" end')
+MQ_LICENSE=$(echo $LICENSE | jq -r 'if has("mq") then .mq else "L-RJON-BZFQU2" end')
 TRACING_LICENSE=$(echo $LICENSE | jq -r 'if has("tracing") then .tracing else "CP4I" end')
 NAMESPACE=$(echo $JSON | jq -r .metadata.namespace)
 NAME=$(echo $JSON | jq -r .metadata.name)
@@ -393,6 +380,7 @@ REQUIRED_DEMOS_JSON=$(echo $JSON | jq -c '.spec | if has("demos") then .demos el
 REQUIRED_PRODUCTS_JSON=$(echo $JSON | jq -c '.spec | if has("products") then .products else {} end')
 REQUIRED_ADDONS_JSON=$(echo $JSON | jq -c '.spec | if has("addons") then .addons else {} end')
 DEMO_VERSION=$(echo $JSON | jq -r '.spec | if has("version") then .version else "'$DEFAULT_DEMO_VERSION'" end ')
+SAMPLES_REPO_BRANCH=$(echo $GENERAL | jq -r 'if has("samplesRepoBranch") then .samplesRepoBranch else "'$DEMO_VERSION'" end')
 # To use for un-installation
 ORIGINAL_STATUS=$(echo $JSON | jq -c .status)
 APIC_CONFIGURATION=$(echo $JSON | jq -c '.spec | if has("apic") then .apic else {} end')
@@ -616,15 +604,23 @@ for EACH_ADDON in $(echo $REQUIRED_ADDONS_JSON | jq -r '. | keys[]'); do
     ;;
 
   ocpPipelines)
-    echo -e "$INFO [INFO] Installing OCP pipelines...\n"
-    if ! $SCRIPT_DIR/install-ocp-pipeline.sh; then
-      update_conditions "Failed to install OCP pipelines" "Releasing"
-      update_phase "Failed"
-      FAILED_INSTALL_ADDONS_LIST+=($EACH_ADDON)
-    else
+    echo -e "$INFO [INFO] Checking if 'ocp-pipeline' is already installed...\n"
+    oc get serviceaccount pipeline
+    if [ $? -ne 0 ]; then
+      echo -e "$INFO [INFO] 'ocp-pipeline' currently not installed, attempting to install...\n" 1>&2
+      $SCRIPT_DIR/install-ocp-pipeline.sh
+      if [ $? -eq 2 ]; then
+        echo -e "$CROSS [ERROR] 'ocp-pipeline' needs to be installed before running this script" 1>&2
+        update_conditions "Failed to install OCP pipelines" "Releasing"
+        update_phase "Failed"
+        divider
+        exit 1
+      fi
       echo -e "$TICK [SUCCESS] Successfully installed OCP pipelines"
-      update_addon_status "$EACH_ADDON" "true" "false"
-    fi # install-ocp-pipeline.sh
+    else
+      echo -e "$TICK [SUCCESS] OCP pipelines already installed"
+    fi
+    update_addon_status "$EACH_ADDON" "true" "false"
 
     divider && echo -e "$INFO [INFO] Configuring secrets and permissions related to ocp pipelines in the '$NAMESPACE' namespace\n"
     if ! $SCRIPT_DIR/configure-ocp-pipeline.sh -n "$NAMESPACE"; then
