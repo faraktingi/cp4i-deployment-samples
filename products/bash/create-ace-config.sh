@@ -157,7 +157,7 @@ fi
 DDD_SUFFIX_FOR_ACE_POLICYPROJECT=$([[ $SUFFIX == "ddd" ]] && echo "-${DDD_DEMO_TYPE}" || echo "")
 
 DB_POD=$(oc get pod -n $POSTGRES_NAMESPACE -l name=postgresql -o jsonpath='{.items[].metadata.name}')
-DB_SVC="postgresql.$POSTGRES_NAMESPACE.svc.cluster.local"
+DB_SVC="158.175.94.117"
 
 echo -e "$INFO [INFO] Current directory: $CURRENT_DIR"
 echo -e "$INFO [INFO] Working directory: $WORKING_DIR"

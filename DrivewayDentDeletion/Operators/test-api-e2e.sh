@@ -124,7 +124,7 @@ echo "INFO: Host: ${HOST}"
 
 DB_USER=$(echo ${NAMESPACE}_${DDD_TYPE}_${USER_DB_SUFFIX} | sed 's/-/_/g')
 DB_NAME="db_${DB_USER}"
-DB_POD=$(oc get pod -n $POSTGRES_NAMESPACE -l name=postgresql -o jsonpath='{.items[].metadata.name}')
+# DB_POD=$(oc get pod -n $POSTGRES_NAMESPACE -l name=postgresql -o jsonpath='{.items[].metadata.name}')
 echo "INFO: Username name is: '${DB_USER}'"
 echo "INFO: Database name is: '${DB_NAME}'"
 
@@ -184,17 +184,17 @@ if [ "$post_response_code" == "200" ]; then
 
     divider
 
-    #  ------- Get row to confirm post -------
-    echo -e "\nINFO: Select and print the row as user '${DB_USER}' from database '${DB_NAME}' with id '$quote_id' to confirm POST and GET..."
-    if ! oc exec -n $POSTGRES_NAMESPACE -it ${DB_POD} \
-      -- psql -U ${DB_USER} -d ${DB_NAME} -c \
-      "SELECT * FROM quotes WHERE quotes.quoteid=${quote_id};"; then
-      echo -e "\n$CROSS ERROR: Cannot get row with quote id '$quote_id' to confirm POST and GET"
-      divider
-      exit 1
-    else
-      echo -e "\n$TICK INFO: Successfully got row to confirm POST and GET"
-    fi
+    # #  ------- Get row to confirm post -------
+    # echo -e "\nINFO: Select and print the row as user '${DB_USER}' from database '${DB_NAME}' with id '$quote_id' to confirm POST and GET..."
+    # if ! oc exec -n $POSTGRES_NAMESPACE -it ${DB_POD} \
+    #   -- psql -U ${DB_USER} -d ${DB_NAME} -c \
+    #   "SELECT * FROM quotes WHERE quotes.quoteid=${quote_id};"; then
+    #   echo -e "\n$CROSS ERROR: Cannot get row with quote id '$quote_id' to confirm POST and GET"
+    #   divider
+    #   exit 1
+    # else
+    #   echo -e "\n$TICK INFO: Successfully got row to confirm POST and GET"
+    # fi
 
   else
     echo "$CROSS ERROR: FAILED - Error code: ${get_response_code}"
@@ -203,34 +203,34 @@ if [ "$post_response_code" == "200" ]; then
   fi
 
   divider
-  # ------- Delete from the database -------
-  echo -e "\nINFO: Deleting row from database '${DB_NAME}' as user '${DB_USER}' with quote id '$quote_id'..."
-  if ! oc exec -n $POSTGRES_NAMESPACE -it ${DB_POD} \
-    -- psql -U ${DB_USER} -d ${DB_NAME} -c \
-    "DELETE FROM quotes WHERE quotes.quoteid=${quote_id};"; then
-    echo -e "\n$CROSS ERROR: Cannot delete the row with quote id '$quote_id'"
-    divider
-    exit 1
-  else
-    echo -e "\n$TICK INFO: Successfully deleted the row with quote id '$quote_id'"
-  fi
+  # # ------- Delete from the database -------
+  # echo -e "\nINFO: Deleting row from database '${DB_NAME}' as user '${DB_USER}' with quote id '$quote_id'..."
+  # if ! oc exec -n $POSTGRES_NAMESPACE -it ${DB_POD} \
+  #   -- psql -U ${DB_USER} -d ${DB_NAME} -c \
+  #   "DELETE FROM quotes WHERE quotes.quoteid=${quote_id};"; then
+  #   echo -e "\n$CROSS ERROR: Cannot delete the row with quote id '$quote_id'"
+  #   divider
+  #   exit 1
+  # else
+  #   echo -e "\n$TICK INFO: Successfully deleted the row with quote id '$quote_id'"
+  # fi
 
   divider
 
-  #  ------- Get row output and check for '0 rows' in output to confirm deletion -------
-  echo -e "\nINFO: Confirming the deletion of the row with the quote id '$quote_id' from database '${DB_NAME}' as the user '${DB_USER}'..."
-  oc exec -n $POSTGRES_NAMESPACE -it ${DB_POD} \
-    -- psql -U ${DB_USER} -d ${DB_NAME} -c \
-    "SELECT * FROM quotes WHERE quotes.quoteid=${quote_id};" |
-    grep '0 rows'
+  # #  ------- Get row output and check for '0 rows' in output to confirm deletion -------
+  # echo -e "\nINFO: Confirming the deletion of the row with the quote id '$quote_id' from database '${DB_NAME}' as the user '${DB_USER}'..."
+  # oc exec -n $POSTGRES_NAMESPACE -it ${DB_POD} \
+  #   -- psql -U ${DB_USER} -d ${DB_NAME} -c \
+  #   "SELECT * FROM quotes WHERE quotes.quoteid=${quote_id};" |
+  #   grep '0 rows'
 
-  if [ $? -eq 0 ]; then
-    echo -e "\n$TICK INFO: Successfully confirmed deletion of row with quote id '$quote_id'"
-  else
-    echo -e "\n$CROSS ERROR: Deletion of the row with quote id '$quote_id' failed"
-    divider
-    exit 1
-  fi
+  # if [ $? -eq 0 ]; then
+  #   echo -e "\n$TICK INFO: Successfully confirmed deletion of row with quote id '$quote_id'"
+  # else
+  #   echo -e "\n$CROSS ERROR: Deletion of the row with quote id '$quote_id' failed"
+  #   divider
+  #   exit 1
+  # fi
 
 else
   # Failure catch during POST

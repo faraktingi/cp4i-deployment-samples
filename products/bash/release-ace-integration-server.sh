@@ -35,7 +35,7 @@ tracing_enabled="false"
 tracing_namespace=""
 CURRENT_DIR=$(dirname $0)
 POLICY_PROJECT_TYPE="policyproject-ddd-dev"
-ace_replicas="2"
+ace_replicas="3"
 
 function divider() {
   echo -e "\n-------------------------------------------------------------------------------------------------------------------\n"
@@ -129,7 +129,7 @@ spec:
   license:
     accept: true
     license: $(getACELicense $namespace)
-    use: CloudPakForIntegrationNonProduction
+    use: AppConnectEnterpriseProduction
   pod:
    containers:
      runtime:
@@ -160,17 +160,17 @@ fi
 
 timer=0
 echo "[INFO] tracing is set to $tracing_enabled"
-if [ "$tracing_enabled" == "true" ]; then
-  while ! oc get secrets icp4i-od-store-cred -n ${namespace}; do
-    echo "Waiting for the secret icp4i-od-store-cred to get created"
-    if [ $timer -gt 30 ]; then
-      echo "Secret icp4i-od-store-cred didn't get created in  ${namespace}, going to create the secret next "
-      break
-      timer=$((timer + 1))
-    fi
-    sleep 10
-  done
-fi
+# if [ "$tracing_enabled" == "true" ]; then
+#   while ! oc get secrets icp4i-od-store-cred -n ${namespace}; do
+#     echo "Waiting for the secret icp4i-od-store-cred to get created"
+#     if [ $timer -gt 30 ]; then
+#       echo "Secret icp4i-od-store-cred didn't get created in  ${namespace}, going to create the secret next "
+#       break
+#       timer=$((timer + 1))
+#     fi
+#     sleep 10
+#   done
+# fi
 # -------------------------------------- INSTALL JQ ---------------------------------------------------------------------
 
 divider

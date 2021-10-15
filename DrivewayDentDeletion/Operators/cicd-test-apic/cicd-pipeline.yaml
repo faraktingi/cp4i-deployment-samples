@@ -87,6 +87,7 @@ spec:
     - name: build-ace-int-server-ace-api
       runAfter:
         - fixup-dockerfiles
+        - deploy-wait-mq
       taskRef:
         name: build-task
       params:
@@ -107,6 +108,7 @@ spec:
     - name: build-ace-int-server-ace-acme
       runAfter:
         - fixup-dockerfiles
+        - deploy-wait-ace-api
       taskRef:
         name: build-task
       params:
@@ -127,6 +129,7 @@ spec:
     - name: build-ace-int-server-ace-bernie
       runAfter:
         - fixup-dockerfiles
+        - deploy-wait-ace-acme
       taskRef:
         name: build-task
       params:
@@ -147,6 +150,7 @@ spec:
     - name: build-ace-int-server-ace-chris
       runAfter:
         - fixup-dockerfiles
+        - deploy-wait-ace-bernie
       taskRef:
         name: build-task
       params:
@@ -364,6 +368,7 @@ spec:
     - name: deploy-wait-ace-api-test
       runAfter:
         - image-push-to-test-ace-api
+        - deploy-wait-mq-test
       taskRef:
         name: deploy-task
       params:
@@ -387,6 +392,7 @@ spec:
     - name: deploy-wait-ace-bernie-test
       runAfter:
         - image-push-to-test-ace-bernie
+        - deploy-wait-ace-api-test
       taskRef:
         name: deploy-task
       params:
@@ -410,6 +416,7 @@ spec:
     - name: deploy-wait-ace-acme-test
       runAfter:
         - image-push-to-test-ace-acme
+        - deploy-wait-ace-bernie-test
       taskRef:
         name: deploy-task
       params:
@@ -433,6 +440,7 @@ spec:
     - name: deploy-wait-ace-chris-test
       runAfter:
         - image-push-to-test-ace-chris
+        - deploy-wait-ace-acme-test
       taskRef:
         name: deploy-task
       params:

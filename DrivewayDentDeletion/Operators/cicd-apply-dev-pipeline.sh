@@ -140,7 +140,7 @@ fi
 divider
 
 # create tekton tasks
-TRACING="-t -z $NAMESPACE"
+TRACING=""
 echo -e "$INFO [INFO] Create tekton tasks for the dev pipeline of the driveway dent deletion demo"
 if cat $CURRENT_DIR/../../CommonPipelineResources/cicd-tasks.yaml |
   sed "s#{{NAMESPACE}}#$NAMESPACE#g;" |

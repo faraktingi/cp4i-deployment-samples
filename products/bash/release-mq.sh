@@ -152,9 +152,12 @@ spec:
     use: NonProduction
   queueManager:
     name: ${qm_name}
+    availability:
+      type: NativeHA
     storage:
+      defaultClass: ibmc-block-gold
       queueManager:
-        type: ephemeral
+        type: persistent-claim
   template:
     pod:
       containers:
@@ -165,9 +168,6 @@ spec:
   version: 9.2.3.0-r1
   web:
     enabled: true
-  tracing:
-    enabled: ${tracing_enabled}
-    namespace: ${tracing_namespace}
 EOF
   if [[ "$?" != "0" ]]; then
     echo -e "$cross [ERROR] Failed to apply QueueManager CR"
@@ -272,10 +272,13 @@ spec:
   queueManager:
     image: ${image_name}
     imagePullPolicy: Always
-    name: ${qm_name}
+    availability:
+      type: NativeHA
     storage:
+      defaultClass: ibmc-block-gold
       queueManager:
-        type: ephemeral
+        type: persistent-claim
+    name: ${qm_name}
     ini:
       - configMap:
           items:
@@ -291,9 +294,6 @@ spec:
   version: 9.2.3.0-r1
   web:
     enabled: true
-  tracing:
-    enabled: ${tracing_enabled}
-    namespace: ${tracing_namespace}
 EOF
   if [[ "$?" != "0" ]]; then
     echo -e "$cross [ERROR] Failed to apply QueueManager CR"
