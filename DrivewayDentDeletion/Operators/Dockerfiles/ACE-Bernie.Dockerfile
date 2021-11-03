@@ -1,4 +1,4 @@
 # Note if ibm-entitlement-key includes an auth for cp.stg.icr.io then this will be changed to cp.stg.icr.io:
-FROM cp.icr.io/cp/appc/ace-server-prod@sha256:d04fa579290896a8a9474382be3d2729580e16810beacfad8714e8df88794391
+FROM cp.icr.io/cp/appc/ace-server-prod@sha256:f7a74de7e5cd3d1d56cabde1c11b174b1be643f48c3bce63ab5f344495877052
 ENV MQCERTLABL=aceclient
 COPY BernieV1.bar /home/aceuser/initial-config/bars/

@@ -9,6 +9,9 @@
 #******************************************************************************
 
 #******************************************************************************
+# PLEASE NOTE: The configure-apic-v10.sh is for Demos only and not recommended for use anywhere else. 
+# The script uses unsupported internal features that are NOT suitable for production usecases.
+#
 # PREREQUISITES:
 #   - Logged into cluster on the OC CLI (https://docs.openshift.com/container-platform/4.4/cli_reference/openshift_cli/getting-started-cli.html)
 #
@@ -94,7 +97,7 @@ else
   echo -e "\nThe secret 'cp4i-demo-apic-smtp-secret' does not exist in the namespace '$NAMESPACE', continuing configuring APIC with default SMTP values..."
 fi
 
-CONFIGURATOR_IMAGE=${CONFIGURATOR_IMAGE:-"${REPO}/cp/apic/ibm-apiconnect-apiconnect-master@sha256:bb1fda3a0e0c07cb2fb6540240e3e3ef4305e1b327abbce2c6169954c5945d2a"}
+CONFIGURATOR_IMAGE=${CONFIGURATOR_IMAGE:-"${REPO}/cp/apic/ibm-apiconnect-apiconnect-master@sha256:d6892c49d138b892dd932b8713b3e80450ec7bdee25a07c6bcbbaf94719e0075"}
 MAIL_SERVER_HOST=${MAIL_SERVER_HOST:-"smtp.mailtrap.io"}
 MAIL_SERVER_PORT=${MAIL_SERVER_PORT:-"2525"}
 MAIL_SERVER_USERNAME=${MAIL_SERVER_USERNAME:-"<your-username>"}
@@ -129,8 +132,7 @@ for i in $(seq 1 60); do
     PORTAL_WWW_ADMIN_READY=$(oc get pod -n ${NAMESPACE} ${PORTAL_WWW_POD} -o json | jq '.status.containerStatuses[0].ready')
     if [[ "$PORTAL_WWW_ADMIN_READY" == "true" ]]; then
       printf "$tick"
-      echo "PORTAL_WWW_POD (${PORTAL_WWW_POD}) ready, patching..."
-      oc exec -n ${NAMESPACE} ${PORTAL_WWW_POD} -c admin -- bash -ic "sed -i '/^add_uuid_and_alias/a drush \"@\$SITE_ALIAS\" pm-list --type=Module --status=enabled' /opt/ibm/bin/restore_site"
+      echo "PORTAL_WWW_POD (${PORTAL_WWW_POD}) is ready"
       break
     else
       echo "${PORTAL_WWW_POD} not ready"

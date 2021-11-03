@@ -44,7 +44,7 @@ done
 
 echo -e "$INFO [INFO] Applying catalogsources\n"
 if [[ "${USE_PRERELEASE_CATALOGS}" == "true" ]]; then
-  echo -e "$INFO [INFO] Using the pre-release catalog sources as specified at https://ibm.ent.box.com/notes/765437595126"
+  echo -e "$INFO [INFO] Using the Q3 pre-release catalog sources as specified at https://ibm.box.com/s/nmzp13h9dctd3ikexxo233py92w6z91k"
   cat <<EOF | oc apply -f -
 ---
 apiVersion: operators.coreos.com/v1alpha1
@@ -54,7 +54,7 @@ metadata:
   namespace: openshift-marketplace
 spec:
   displayName: IBMCS Operators
-  image: hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com/ibmcom/ibm-common-service-catalog:20210316-1951
+  image: hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com/ibmcom/ibm-common-service-catalog:latest-validated
   publisher: IBM
   sourceType: grpc
   updateStrategy:
@@ -68,7 +68,7 @@ metadata:
   namespace: openshift-marketplace
 spec:
   displayName: IBMABP Operators
-  image: docker.io/ibmcom/ibm-automation-foundation-core-catalog@sha256:e34c8b699d0481848974904ac2014fb029bd2c08b38fe902ba615dbe4354a3e1
+  image: cp.stg.icr.io/cp/ibm-automation-foundation-core-catalog:latest-validated
   publisher: IBM
   sourceType: grpc
   updateStrategy:
@@ -96,7 +96,7 @@ metadata:
   namespace: openshift-marketplace
 spec:
   displayName: ACE Operators
-  image: docker.io/ibmcom/appconnect-operator-catalog:1.3.0-20210322-152242@sha256:82b429c3bbe14cb8b1919f0dfa82557cbf2223c51f2e83327ce87336817f99cf
+  image: cp.stg.icr.io/cp/appconnect-operator-catalog:latest-cd
   publisher: IBM
   sourceType: grpc
   updateStrategy:
@@ -110,7 +110,7 @@ metadata:
  namespace: openshift-marketplace
 spec:
  displayName: MQ Operators
- image: docker.io/ibmcom/ibm-mq-operator-catalog@sha256:f0404c2a1c543274c940c55a2f86f22c29ee6431a7e9a81a3cc00249d60ba005
+ image: icr.io/cpopen/ibm-mq-operator-catalog@sha256:94642ded53b9fa318dbb5700f3ae647799d47e4c361067afb36430c587691b02
  publisher: IBM
  sourceType: grpc
  updateStrategy:
@@ -124,7 +124,7 @@ metadata:
   namespace: openshift-marketplace
 spec:
   displayName: ES Operators
-  image: cp.stg.icr.io/cp/ibm-eventstreams-catalog:2021-03-17-13.19.19-5849e9a
+  image: cp.stg.icr.io/cp/ibm-eventstreams-catalog:latest-cd
   publisher: IBM
   sourceType: grpc
   updateStrategy:
@@ -138,9 +138,21 @@ metadata:
   namespace: openshift-marketplace
 spec:
   displayName: APIC Operators
-  image: ibmcom/ibm-apiconnect-catalog@sha256:f88e6027145b70e382c6c66e1aab6405e0ac98cb1313c7b11edea71308d1f2f2
+  image: docker.io/ibmcom/ibm-apiconnect-catalog@sha256:98a0cb600be842718b7377c5d270b7d0a27afaf52be448ef682e5e76d0c15278
   publisher: IBM
   sourceType: grpc
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-ai-wmltraining-catalog
+  namespace: openshift-marketplace
+spec:
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-ai-wmltraining-operator-catalog@sha256:4e88b9f2df60be6af156d188657763dfa4cbe074c40ea85ba82858796e3cd6a3
   updateStrategy:
     registryPoll:
       interval: 45m
@@ -152,7 +164,7 @@ metadata:
   namespace: openshift-marketplace
 spec:
   displayName: DP Operators
-  image: cp.stg.icr.io/cp/datapower-operator-catalog@sha256:119157f3d0839674b9bb58ac1462b0963964e8b16f4ed4d5e2e91d199b28723d
+  image: cp.stg.icr.io/cp/datapower-operator-catalog:latest-cd
   publisher: IBM
   sourceType: grpc
   updateStrategy:
@@ -166,7 +178,7 @@ metadata:
   namespace: openshift-marketplace
 spec:
   displayName: Redis for Aspera Operators
-  image: cp.stg.icr.io/cp/ibm-cloud-databases-redis-catalog@sha256:1462cee2d79729c72b4d9b39399ddfd13c48c7f923a1e55ccdbb5df2091ada18
+  image: cp.stg.icr.io/cp/ibm-cloud-databases-redis-catalog@sha256:bb65ca87c987b040b0a8cea4cf44af9bf1a0110442f249529032dd580cc29b36
   publisher: IBM
   sourceType: grpc
   updateStrategy:
@@ -180,7 +192,7 @@ metadata:
   namespace: openshift-marketplace
 spec:
   displayName: Aspera Operators
-  image: docker.io/ibmcom/aspera-hsts-catalog@sha256:3ada193cc000c49cb15c5f31d6ce775cd1dfa1b5e5094794b119fe2721856da5
+  image: cp.stg.icr.io/cp/icp4i/aspera/aspera-hsts-catalog@sha256:a10701d595b179d38ffc0ea16b0c89c1def78bd4c20276f7570f9bdeee5de917
   publisher: IBM
   sourceType: grpc
   updateStrategy:
@@ -194,7 +206,7 @@ metadata:
   namespace: openshift-marketplace
 spec:
   displayName: AR Operators
-  image: docker.io/ibmcom/ibm-integration-asset-repository-catalog@sha256:2be42bf3651b4c6d2e3bb967437b6ce34144fa403155e4a614ca3e3c635173f2
+  image: cp.stg.icr.io/cp/ibm-integration-asset-repository-catalog:1.3.2-2021-09-06-1534-815bfd8b-service-v2021.2.1-1-amd64@sha256:9c065c84879686e4a45b9f23a121958f59d9372c1378e8b75536405da1d10693
   publisher: IBM
   sourceType: grpc
   updateStrategy:
@@ -208,7 +220,7 @@ metadata:
   namespace: openshift-marketplace
 spec:
   displayName: OD Operators
-  image: cp.stg.icr.io/cp/ibm-integration-operations-dashboard-catalog:2.2.0-2021-03-23-0936-30146a77@sha256:b9fdaf04a602668afc2aab2964bade733fd35e804834ca7bc1a380a25df749da
+  image: cp.stg.icr.io/cp/ibm-integration-operations-dashboard-catalog:2.4.0-2021-09-10-0845-d238b3ef@sha256:34054f6688ce05a29a66707296c736e31f662364f758058a2542ce41cfc5e40d
   publisher: IBM
   sourceType: grpc
   updateStrategy:
@@ -231,28 +243,9 @@ spec:
       interval: 45m
 ---
 EOF
-
-
 else
   echo -e "$INFO [INFO] Using the release catalog sources"
   cat <<EOF | oc apply -f -
----
-apiVersion: operators.coreos.com/v1alpha1
-kind: CatalogSource
-metadata:
-  name: opencloud-operators
-  namespace: openshift-marketplace
-spec:
-  displayName: IBMCS Operators
-  publisher: IBM
-  sourceType: grpc
-  image: docker.io/ibmcom/ibm-common-service-catalog:latest
-  updateStrategy:
-    registryPoll:
-      interval: 45m
-
----
-
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -262,7 +255,7 @@ spec:
   displayName: ibm-operator-catalog
   publisher: IBM Content
   sourceType: grpc
-  image: docker.io/ibmcom/ibm-operator-catalog
+  image: icr.io/cpopen/ibm-operator-catalog:latest
   updateStrategy:
     registryPoll:
       interval: 45m
